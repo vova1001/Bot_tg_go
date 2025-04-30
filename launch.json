@@ -1,0 +1,17 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Run Bot",
+        "type": "go",
+        "request": "launch",
+        "mode": "auto",
+        "program": "CourseTg/cmd/bot/main.go",
+        "envFile": "CourseTg/.env",  // Путь к .env относительно корня проекта
+        "env": {
+          "GO_ENV": "development"
+        }
+      }
+    ]
+  }
+  

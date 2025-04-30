@@ -1,0 +1,8 @@
+services:
+  - type: web
+    name: telegram-bot
+    env: go
+    plan: free
+    region: frankfurt
+    buildCommand: go build -o main .
+    startCommand: ./main
