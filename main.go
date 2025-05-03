@@ -25,7 +25,7 @@ func main() {
 	log.Printf("Authorized on account %s", bot.Self.UserName)
 
 	// Создаем вебхук URL для Telegram
-	webhookURL := "https://your-domain.com/"
+	webhookURL := "https://bot-tg-go.onrender.com"
 	_, err = bot.SetWebhook(tgbotapi.NewWebhook(webhookURL))
 	if err != nil {
 		log.Fatal(err)
@@ -54,6 +54,6 @@ func main() {
 	http.HandleFunc("/yookassa-webhook", webhook.HandleYooKassaWebhook)
 
 	// Запускаем сервер
-	log.Println("Server started at https://your-domain.com/")
+	log.Println("Server started at https://bot-tg-go.onrender.com")
 	log.Fatal(http.ListenAndServe(":443", nil)) // Запуск HTTPS сервера
 }
