@@ -4,7 +4,7 @@ import (
 	"CourseTg/config"
 	"CourseTg/internal/payment"
 
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api" // исправил импорт
 )
 
 var processedUpdates = make(map[int]bool)
@@ -45,8 +45,8 @@ func HandleUpdates(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 	if update.CallbackQuery != nil {
 		data := update.CallbackQuery.Data
 
-		switch {
-		case data == "show_courses":
+		switch data {
+		case "show_courses":
 			buttons := tgbotapi.NewInlineKeyboardMarkup(
 				tgbotapi.NewInlineKeyboardRow(
 					tgbotapi.NewInlineKeyboardButtonData("📗 Сборник готовых завтраков", "course_2"),
@@ -62,7 +62,7 @@ func HandleUpdates(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 			msg.ReplyMarkup = buttons
 			bot.Send(msg)
 
-		case len(data) > 6 && data[:6] == "course":
+		case "course_1", "course_2", "course_3":
 			var courseDescription string
 			switch data {
 			case "course_2":
@@ -85,34 +85,36 @@ func HandleUpdates(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 			msg.ReplyMarkup = buttons
 			bot.Send(msg)
 
-		case len(data) > 4 && data[:4] == "buy_":
-			course := data[4:]
-			var amount, desc string
+		default:
+			if len(data) > 4 && data[:4] == "buy_" {
+				course := data[4:]
+				var amount, desc string
 
-			switch course {
-			case "course_1":
-				amount = "599.00"
-				desc = "Книга рецептов"
-			case "course_2":
-				amount = "399.00"
-				desc = "Сборник завтраков"
-			case "course_3":
-				amount = "800.00"
-				desc = "Книга + Завтраки"
-			default:
-				return
-			}
+				switch course {
+				case "course_1":
+					amount = "599.00"
+					desc = "Книга рецептов"
+				case "course_2":
+					amount = "399.00"
+					desc = "Сборник завтраков"
+				case "course_3":
+					amount = "800.00"
+					desc = "Книга + Завтраки"
+				default:
+					return
+				}
 
-			cfg := config.LoadConfig()
-			url, err := payment.CreatePayment(amount, desc, cfg.SuccessURL, cfg.YooKassaShopID, cfg.YooKassaSecretKey)
-			if err != nil {
-				msg := tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, "❌ Ошибка при создании ссылки на оплату.")
+				cfg := config.LoadConfig()
+				url, err := payment.CreatePayment(amount, desc, "", cfg.YooKassaShopID, cfg.YooKassaSecretKey)
+				if err != nil {
+					msg := tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, "❌ Ошибка при создании ссылки на оплату.")
+					bot.Send(msg)
+					return
+				}
+
+				msg := tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, "💳 Перейдите по ссылке для оплаты:\n"+url)
 				bot.Send(msg)
-				return
 			}
-
-			msg := tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, "💳 Перейдите по ссылке для оплаты:\n"+url)
-			bot.Send(msg)
 		}
 
 		bot.AnswerCallbackQuery(tgbotapi.NewCallback(update.CallbackQuery.ID, ""))

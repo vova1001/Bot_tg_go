@@ -1,34 +1,69 @@
 package payment
 
 import (
-	"fmt"
-	"log"
+	"bytes"
+	"encoding/json"
 	"net/http"
-	"net/url"
 )
 
-func CreatePayment(amount string, description string, successURL string, shopID string, secretKey string) (string, error) {
-	data := url.Values{}
-	data.Set("amount", amount)
-	data.Set("currency", "RUB")
-	data.Set("description", description)
-	data.Set("success_url", successURL)
-	data.Set("shop_id", shopID)
-	data.Set("secret_key", secretKey)
+type Metadata struct {
+	TelegramID string `json:"telegram_id"`
+}
 
-	// Формируем запрос к API Юкассы
-	resp, err := http.PostForm("https://api.yookassa.ru/v3/payment", data)
+type PaymentRequest struct {
+	Amount struct {
+		Value    string `json:"value"`
+		Currency string `json:"currency"`
+	} `json:"amount"`
+	Confirmation struct {
+		Type      string `json:"type"`
+		ReturnURL string `json:"return_url"`
+	} `json:"confirmation"`
+	Capture     bool     `json:"capture"`
+	Description string   `json:"description"`
+	Metadata    Metadata `json:"metadata"`
+}
+
+type PaymentResponse struct {
+	Confirmation struct {
+		ConfirmationURL string `json:"confirmation_url"`
+	} `json:"confirmation"`
+}
+
+func CreatePayment(amount, description, telegramID, shopID, secretKey string) (string, error) {
+	url := "https://api.yookassa.ru/v3/payments"
+
+	reqBody := PaymentRequest{}
+	reqBody.Amount.Value = amount
+	reqBody.Amount.Currency = "RUB"
+	reqBody.Confirmation.Type = "redirect"
+	reqBody.Confirmation.ReturnURL = "https://t.me/JuliiaFitness_bot" // Измени!
+	reqBody.Capture = true
+	reqBody.Description = description
+	reqBody.Metadata.TelegramID = telegramID
+
+	jsonData, _ := json.Marshal(reqBody)
+
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
 	if err != nil {
-		log.Println("Error while creating payment:", err)
+		return "", err
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+	req.SetBasicAuth(shopID, secretKey)
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
 		return "", err
 	}
 	defer resp.Body.Close()
 
-	// Проверка на успешный ответ
-	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("failed to create payment, status code: %d", resp.StatusCode)
+	var res PaymentResponse
+	err = json.NewDecoder(resp.Body).Decode(&res)
+	if err != nil {
+		return "", err
 	}
 
-	// Возвращаем URL для оплаты
-	return "https://payment.yookassa.ru/" + resp.Request.URL.Path, nil
+	return res.Confirmation.ConfirmationURL, nil
 }
