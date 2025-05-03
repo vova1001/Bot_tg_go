@@ -6,6 +6,7 @@ services:
     region: Oregon
     buildCommand: go build -o main .
     startCommand: ./main
+    goVersion: 1.24.1  # Указываем нужную версию Go
     envVars:
       - key: TELEGRAM_TOKEN
         value: 7879706842:AAEcNq9Jj7I1DsqCvklNy56BysXmqXRLWhA
