@@ -72,7 +72,7 @@ func sendPDF(telegramID string, courseID string) {
 	}
 
 	for _, file := range filesToSend {
-		pdfPath := filepath.Join("CourseTg/pdf", file)
+		pdfPath := filepath.Join("pdf", file)
 		fileBytes, err := os.ReadFile(pdfPath)
 		if err != nil {
 			log.Printf("❌ Ошибка чтения PDF %s: %v", file, err)
