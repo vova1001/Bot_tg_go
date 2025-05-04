@@ -14,8 +14,8 @@ type Config struct {
 func LoadConfig() *Config {
 	return &Config{
 		TelegramToken:     getEnv("TELEGRAM_TOKEN", ""),
-		YooKassaShopID:    getEnv("YOO_KASSA_SHOP_ID", ""),
-		YooKassaSecretKey: getEnv("YOO_KASSA_SECRET_KEY", ""),
+		YooKassaShopID:    getEnv("YOOKASSA_SHOP_ID", ""),
+		YooKassaSecretKey: getEnv("YOOKASSA_SECRET_KEY", ""),
 	}
 }
 
