@@ -4,28 +4,30 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"math"
 	"net/http"
-	"strconv"
-	"time"
 )
 
-type Metadata struct {
-	TelegramID string `json:"telegram_id"`
+type Amount struct {
+	Value    string `json:"value"`
+	Currency string `json:"currency"`
+}
+
+type Confirmation struct {
+	Type      string `json:"type"`
+	ReturnURL string `json:"return_url"`
 }
 
 type PaymentRequest struct {
-	Amount struct {
-		Value    string `json:"value"`
-		Currency string `json:"currency"`
-	} `json:"amount"`
-	Confirmation struct {
-		Type      string `json:"type"`
-		ReturnURL string `json:"return_url"`
-	} `json:"confirmation"`
-	Capture     bool     `json:"capture"`
-	Description string   `json:"description"`
-	Metadata    Metadata `json:"metadata"`
+	Amount       Amount       `json:"amount"`
+	Confirmation Confirmation `json:"confirmation"`
+	Capture      bool         `json:"capture"`
+	Description  string       `json:"description"`
+	Metadata     Metadata     `json:"metadata"`
+}
+
+type Metadata struct {
+	TelegramID string `json:"telegram_id"`
+	CourseID   string `json:"course_id"` // Новое поле
 }
 
 type PaymentResponse struct {
@@ -34,62 +36,47 @@ type PaymentResponse struct {
 	} `json:"confirmation"`
 }
 
-func parseAmount(amountStr string) float64 {
-	amount, err := strconv.ParseFloat(amountStr, 64)
-	if err != nil {
-		return 0.0
-	}
-	// Округление до двух знаков после запятой
-	return math.Round(amount*100) / 100
-}
-
-func CreatePayment(amount, description, telegramID, shopID, secretKey string) (string, error) {
-	url := "https://api.yookassa.ru/v3/payments"
-
-	// Создание структуры запроса
-	reqBody := PaymentRequest{}
-	reqBody.Amount.Value = fmt.Sprintf("%.2f", parseAmount(amount)) // Преобразуем amount в правильный формат
-	reqBody.Amount.Currency = "RUB"
-	reqBody.Confirmation.Type = "redirect"
-	reqBody.Confirmation.ReturnURL = "https://t.me/JuliiaFitness_bot" // Убедитесь, что это правильный URL для редиректа
-	reqBody.Capture = true
-	reqBody.Description = description
-	reqBody.Metadata.TelegramID = telegramID
-
-	// Преобразование структуры в JSON
-	jsonData, err := json.Marshal(reqBody)
-	if err != nil {
-		return "", err
+func CreatePayment(amount, description, telegramID, courseID, shopID, secretKey string) (string, error) {
+	requestBody := PaymentRequest{
+		Amount: Amount{
+			Value:    amount,
+			Currency: "RUB",
+		},
+		Confirmation: Confirmation{
+			Type:      "redirect",
+			ReturnURL: "https://t.me/JuliiaFitness_bot",
+		},
+		Capture:     true,
+		Description: description,
+		Metadata: Metadata{
+			TelegramID: telegramID,
+			CourseID:   courseID,
+		},
 	}
 
-	// Создание HTTP запроса
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
+	jsonBody, err := json.Marshal(requestBody)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("ошибка при маршалинге запроса: %v", err)
 	}
 
-	// Установка заголовков
+	req, err := http.NewRequest("POST", "https://api.yookassa.ru/v3/payments", bytes.NewBuffer(jsonBody))
+	if err != nil {
+		return "", fmt.Errorf("ошибка при создании запроса: %v", err)
+	}
 	req.Header.Set("Content-Type", "application/json")
 	req.SetBasicAuth(shopID, secretKey)
 
-	// Уникальный Idempotence Key
-	req.Header.Set("Idempotence-Key", fmt.Sprintf("key-%d", time.Now().UnixNano()))
-
-	// Отправка запроса
-	client := &http.Client{}
-	resp, err := client.Do(req)
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("ошибка при отправке запроса: %v", err)
 	}
 	defer resp.Body.Close()
 
-	// Обработка ответа
-	var res PaymentResponse
-	err = json.NewDecoder(resp.Body).Decode(&res)
+	var paymentResp PaymentResponse
+	err = json.NewDecoder(resp.Body).Decode(&paymentResp)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("ошибка при декодировании ответа: %v", err)
 	}
 
-	// Возвращаем ссылку на подтверждение
-	return res.Confirmation.ConfirmationURL, nil
+	return paymentResp.Confirmation.ConfirmationURL, nil
 }

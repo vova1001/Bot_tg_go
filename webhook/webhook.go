@@ -18,6 +18,7 @@ type YooKassaNotification struct {
 		Status   string `json:"status"`
 		Metadata struct {
 			TelegramID string `json:"telegram_id"`
+			CourseID   string `json:"course_id"` // теперь получаем и ID курса
 		} `json:"metadata"`
 	} `json:"object"`
 }
@@ -35,15 +36,15 @@ func HandleYooKassaWebhook(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if notification.Event == "payment.succeeded" && notification.Object.Status == "succeeded" {
-		log.Printf("✅ Оплата прошла для %s", notification.Object.Metadata.TelegramID)
-		go sendPDF(notification.Object.Metadata.TelegramID)
+		log.Printf("✅ Оплата прошла для %s (%s)", notification.Object.Metadata.TelegramID, notification.Object.Metadata.CourseID)
+		go sendPDF(notification.Object.Metadata.TelegramID, notification.Object.Metadata.CourseID)
 	}
 
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("OK"))
 }
 
-func sendPDF(telegramID string) {
+func sendPDF(telegramID string, courseID string) {
 	cfg := config.LoadConfig()
 	bot, err := tgbotapi.NewBotAPI(cfg.TelegramToken)
 	if err != nil {
@@ -57,25 +58,39 @@ func sendPDF(telegramID string) {
 		return
 	}
 
-	// Указываем путь к PDF (на Render PDF должен быть рядом с бинарником или в отдельной папке)
-	pdfPath := filepath.Join("files", "guide.pdf") // Подразумевается папка /files и файл guide.pdf
-
-	fileBytes, err := os.ReadFile(pdfPath)
-	if err != nil {
-		log.Printf("❌ Ошибка чтения PDF: %v", err)
+	var filesToSend []string
+	switch courseID {
+	case "course_1":
+		filesToSend = []string{"Kniga_receptov.pdf"}
+	case "course_2":
+		filesToSend = []string{"Sbornik_zavtrakov.pdf"}
+	case "course_3":
+		filesToSend = []string{"Kniga_receptov.pdf", "Sbornik_zavtrakov.pdf"}
+	default:
+		log.Printf("❌ Неизвестный courseID: %s", courseID)
 		return
 	}
 
-	doc := tgbotapi.FileBytes{
-		Name:  "guide.pdf",
-		Bytes: fileBytes,
-	}
+	for _, file := range filesToSend {
+		pdfPath := filepath.Join("CourseTg/pdf", file)
+		fileBytes, err := os.ReadFile(pdfPath)
+		if err != nil {
+			log.Printf("❌ Ошибка чтения PDF %s: %v", file, err)
+			continue
+		}
 
-	msg := tgbotapi.NewDocumentUpload(userID, doc)
-	_, err = bot.Send(msg)
-	if err != nil {
-		log.Printf("❌ Ошибка при отправке PDF: %v", err)
-	} else {
-		log.Printf("📄 Файл отправлен пользователю %d", userID)
+		doc := tgbotapi.FileBytes{
+			Name:  file,
+			Bytes: fileBytes,
+		}
+
+		msg := tgbotapi.NewDocumentUpload(userID, doc)
+		msg.Caption = "🎉 Спасибо за покупку! Вот ваш файл:"
+		_, err = bot.Send(msg)
+		if err != nil {
+			log.Printf("❌ Ошибка при отправке PDF %s: %v", file, err)
+		} else {
+			log.Printf("📄 Файл %s отправлен пользователю %d", file, userID)
+		}
 	}
 }

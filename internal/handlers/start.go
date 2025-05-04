@@ -3,10 +3,9 @@ package handlers
 import (
 	"CourseTg/config"
 	"CourseTg/internal/payment"
-
 	"fmt"
 
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api" // исправил импорт
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
 var processedUpdates = make(map[int]bool)
@@ -110,7 +109,7 @@ func HandleUpdates(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 				telegramID := fmt.Sprint(update.CallbackQuery.From.ID)
 
 				cfg := config.LoadConfig()
-				url, err := payment.CreatePayment(amount, desc, telegramID, cfg.YooKassaShopID, cfg.YooKassaSecretKey)
+				url, err := payment.CreatePayment(amount, desc, telegramID, course, cfg.YooKassaShopID, cfg.YooKassaSecretKey)
 				if err != nil {
 					msg := tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, "❌ Ошибка при создании ссылки на оплату.")
 					bot.Send(msg)
