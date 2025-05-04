@@ -45,7 +45,7 @@ func main() {
 	})
 
 	// Вебхук от ЮKassa
-	http.HandleFunc("/yookassa-webhook", webhook.HandleYooKassaWebhook)
+	http.HandleFunc("/webhook/yookassa", webhook.HandleYooKassaWebhook)
 
 	port := os.Getenv("PORT")
 	if port == "" {
