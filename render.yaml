@@ -11,6 +11,6 @@ services:
       - key: TELEGRAM_TOKEN
         value: 7879706842:AAEcNq9Jj7I1DsqCvklNy56BysXmqXRLWhA
       - key: YOOKASSA_SHOP_ID
-        value: 1076798
+        value: 1081346
       - key: YOOKASSA_SECRET_KEY
-        value: live_ZXy37My0aIF8JBwfW38nqnqm_-0ntVNT-e8Faym5bUw
+        value: test_ZqKAtZPYaQ11gdfCZH2jlOKhDafRhnixckjvR8WrbG4

@@ -4,6 +4,8 @@ import (
 	"CourseTg/config"
 	"CourseTg/internal/payment"
 
+	"fmt"
+
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api" // исправил импорт
 )
 
@@ -91,21 +93,24 @@ func HandleUpdates(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 				var amount, desc string
 
 				switch course {
+				case "course_2":
+					amount = "399.00"
+					desc = "Сборник готовых завтраков"
 				case "course_1":
 					amount = "599.00"
 					desc = "Книга рецептов"
-				case "course_2":
-					amount = "399.00"
-					desc = "Сборник завтраков"
 				case "course_3":
 					amount = "800.00"
-					desc = "Книга + Завтраки"
+					desc = "Книга рецептов + Сборник готовых завтраков"
 				default:
 					return
 				}
 
+				// Получаем telegramID
+				telegramID := fmt.Sprint(update.CallbackQuery.From.ID)
+
 				cfg := config.LoadConfig()
-				url, err := payment.CreatePayment(amount, desc, "", cfg.YooKassaShopID, cfg.YooKassaSecretKey)
+				url, err := payment.CreatePayment(amount, desc, telegramID, cfg.YooKassaShopID, cfg.YooKassaSecretKey)
 				if err != nil {
 					msg := tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, "❌ Ошибка при создании ссылки на оплату.")
 					bot.Send(msg)
@@ -116,7 +121,5 @@ func HandleUpdates(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 				bot.Send(msg)
 			}
 		}
-
-		bot.AnswerCallbackQuery(tgbotapi.NewCallback(update.CallbackQuery.ID, ""))
 	}
 }

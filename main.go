@@ -3,10 +3,11 @@ package main
 import (
 	"CourseTg/config"
 	"CourseTg/internal/handlers"
-	"CourseTg/webhook" // импортируем обработчик вебхука
+	"CourseTg/webhook"
 	"encoding/json"
 	"log"
 	"net/http"
+	"os"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
@@ -14,35 +15,28 @@ import (
 func main() {
 	cfg := config.LoadConfig()
 
-	// Создаем нового бота
 	bot, err := tgbotapi.NewBotAPI(cfg.TelegramToken)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("Ошибка при создании бота:", err)
 	}
-
-	// Устанавливаем режим отладки
 	bot.Debug = true
-	log.Printf("Authorized on account %s", bot.Self.UserName)
+	log.Printf("✅ Авторизован как %s", bot.Self.UserName)
 
-	// Создаем вебхук URL для Telegram
+	// Установка вебхука Telegram
 	webhookURL := "https://bot-tg-go.onrender.com"
 	_, err = bot.SetWebhook(tgbotapi.NewWebhook(webhookURL))
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("Ошибка при установке вебхука:", err)
 	}
 
-	// Запускаем сервер для обработки запросов от Telegram
+	// Основной обработчик Telegram
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == "POST" {
-			// Получаем обновление от Telegram
+		if r.Method == http.MethodPost {
 			var update tgbotapi.Update
-			err := json.NewDecoder(r.Body).Decode(&update)
-			if err != nil {
-				http.Error(w, "Invalid request body", http.StatusBadRequest)
+			if err := json.NewDecoder(r.Body).Decode(&update); err != nil {
+				http.Error(w, "Bad request", http.StatusBadRequest)
 				return
 			}
-
-			// Обрабатываем обновление
 			handlers.HandleUpdates(bot, update)
 			w.WriteHeader(http.StatusOK)
 		} else {
@@ -50,10 +44,14 @@ func main() {
 		}
 	})
 
-	// Обработчик для уведомлений от YooKassa
+	// Вебхук от ЮKassa
 	http.HandleFunc("/yookassa-webhook", webhook.HandleYooKassaWebhook)
 
-	// Запускаем сервер
-	log.Println("Server started at https://bot-tg-go.onrender.com")
-	log.Fatal(http.ListenAndServe(":443", nil)) // Запуск HTTPS сервера
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+
+	log.Printf("🚀 Сервер запущен на порту %s", port)
+	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
