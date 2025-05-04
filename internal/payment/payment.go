@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+
+	"github.com/google/uuid"
 )
 
 type Amount struct {
@@ -64,6 +66,8 @@ func CreatePayment(amount, description, telegramID, courseID, shopID, secretKey 
 		return "", fmt.Errorf("ошибка при создании запроса: %v", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Idempotence-Key", uuid.New().String()) // 👈 вот это добавь
+
 	req.SetBasicAuth(shopID, secretKey)
 
 	resp, err := http.DefaultClient.Do(req)
