@@ -19,17 +19,37 @@ type Confirmation struct {
 	ReturnURL string `json:"return_url"`
 }
 
+type Item struct {
+	Description string  `json:"description"`
+	Quantity    float64 `json:"quantity"`
+	Amount      Amount  `json:"amount"`
+	VATCode     int     `json:"vat_code"`
+}
+
+type Customer struct {
+	Email    string `json:"email"`
+	FullName string `json:"full_name"`
+}
+
+type Receipt struct {
+	Customer Customer `json:"customer"`
+	Items    []Item   `json:"items"`
+}
+
+type Metadata struct {
+	TelegramID string `json:"telegram_id"`
+	CourseID   string `json:"course_id"`
+	Name       string `json:"name"`
+	Email      string `json:"email"`
+}
+
 type PaymentRequest struct {
 	Amount       Amount       `json:"amount"`
 	Confirmation Confirmation `json:"confirmation"`
 	Capture      bool         `json:"capture"`
 	Description  string       `json:"description"`
 	Metadata     Metadata     `json:"metadata"`
-}
-
-type Metadata struct {
-	TelegramID string `json:"telegram_id"`
-	CourseID   string `json:"course_id"` // Новое поле
+	Receipt      Receipt      `json:"receipt"`
 }
 
 type PaymentResponse struct {
@@ -38,7 +58,7 @@ type PaymentResponse struct {
 	} `json:"confirmation"`
 }
 
-func CreatePayment(amount, description, telegramID, courseID, shopID, secretKey string) (string, error) {
+func CreatePayment(amount, description, telegramID, courseID, name, email, shopID, secretKey string) (string, error) {
 	requestBody := PaymentRequest{
 		Amount: Amount{
 			Value:    amount,
@@ -53,6 +73,25 @@ func CreatePayment(amount, description, telegramID, courseID, shopID, secretKey 
 		Metadata: Metadata{
 			TelegramID: telegramID,
 			CourseID:   courseID,
+			Name:       name,
+			Email:      email,
+		},
+		Receipt: Receipt{
+			Customer: Customer{
+				Email:    email,
+				FullName: name,
+			},
+			Items: []Item{
+				{
+					Description: description,
+					Quantity:    1,
+					Amount: Amount{
+						Value:    amount,
+						Currency: "RUB",
+					},
+					VATCode: 1, // Без НДС
+				},
+			},
 		},
 	}
 
@@ -66,7 +105,7 @@ func CreatePayment(amount, description, telegramID, courseID, shopID, secretKey 
 		return "", fmt.Errorf("ошибка при создании запроса: %v", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Idempotence-Key", uuid.New().String()) // 👈 вот это добавь
+	req.Header.Set("Idempotence-Key", uuid.New().String())
 
 	req.SetBasicAuth(shopID, secretKey)
 
