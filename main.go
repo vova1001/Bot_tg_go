@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
@@ -44,8 +45,28 @@ func main() {
 		}
 	})
 
+	// Обработчик пинга
+	http.HandleFunc("/ping", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("pong"))
+	})
+
 	// Вебхук от ЮKassa
 	http.HandleFunc("/webhook/yookassa", webhook.HandleYooKassaWebhook)
+
+	// Периодический пинг, чтобы сервер не засыпал
+	go func() {
+		for {
+			resp, err := http.Get("https://bot-tg-go.onrender.com/ping")
+			if err != nil {
+				log.Println("🔁 Ошибка пинга:", err)
+			} else {
+				log.Println("✅ Сервер активен (ping)")
+				resp.Body.Close()
+			}
+			time.Sleep(1 * time.Minute)
+		}
+	}()
 
 	port := os.Getenv("PORT")
 	if port == "" {
