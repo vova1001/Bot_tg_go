@@ -59,13 +59,18 @@ func sendPDF(telegramID string, courseID string) {
 	}
 
 	var filesToSend []string
+	var courseName string
+
 	switch courseID {
 	case "course_1":
 		filesToSend = []string{"Kniga_receptov.pdf"}
+		courseName = "Книга рецептов"
 	case "course_2":
 		filesToSend = []string{"Sbornik_zavtrakov.pdf"}
+		courseName = "Сборник готовых завтраков"
 	case "course_3":
 		filesToSend = []string{"Kniga_receptov.pdf", "Sbornik_zavtrakov.pdf"}
+		courseName = "Книга рецептов и Сборник завтраков"
 	default:
 		log.Printf("❌ Неизвестный courseID: %s", courseID)
 		return
@@ -85,7 +90,8 @@ func sendPDF(telegramID string, courseID string) {
 		}
 
 		msg := tgbotapi.NewDocumentUpload(userID, doc)
-		msg.Caption = "🎉 Спасибо за покупку! Вот ваш файл:"
+		msg.Caption = "🎉 Спасибо за покупку! Вот ваш сборник: " + courseName
+
 		_, err = bot.Send(msg)
 		if err != nil {
 			log.Printf("❌ Ошибка при отправке PDF %s: %v", file, err)
