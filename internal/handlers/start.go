@@ -121,7 +121,7 @@ func HandleUpdates(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 			case "course_1":
 				courseDescription = "📘 Книга рецептов\n💰 Цена: 599₽"
 			case "course_3":
-				courseDescription = "📕 Книга рецептов + Сборник готовых завтраков\n💰 Цена: 800₽"
+				courseDescription = "📕 Книга рецептов + Сборник готовых завтраков\n💰 Цена: 799₽"
 			}
 
 			buttons := tgbotapi.NewInlineKeyboardMarkup(
@@ -143,13 +143,13 @@ func HandleUpdates(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 
 				switch course {
 				case "course_2":
-					amount = "1.00"
+					amount = "399.00"
 					desc = "Сборник готовых завтраков"
 				case "course_1":
-					amount = "1.00"
+					amount = "599.00"
 					desc = "Книга рецептов"
 				case "course_3":
-					amount = "1.00"
+					amount = "799.00"
 					desc = "Книга рецептов + Сборник готовых завтраков"
 				default:
 					return
