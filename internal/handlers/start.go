@@ -93,13 +93,13 @@ func HandleUpdates(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 
 				switch course {
 				case "course_2":
-					amount = "399.00"
+					amount = "1.00"
 					desc = "Сборник готовых завтраков"
 				case "course_1":
-					amount = "599.00"
+					amount = "1.00"
 					desc = "Книга рецептов"
 				case "course_3":
-					amount = "800.00"
+					amount = "1.00"
 					desc = "Книга рецептов + Сборник готовых завтраков"
 				default:
 					return
