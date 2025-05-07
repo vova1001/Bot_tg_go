@@ -1,16 +1,16 @@
-services:
-  - type: web
-    name: Bot_tg_go
-    env: go
-    plan: free
-    region: Oregon
-    buildCommand: go build -o main .
-    startCommand: ./main
-    goVersion: 1.24.1  # Указываем нужную версию Go
-    envVars:
-      - key: TELEGRAM_TOKEN
-        value: 7879706842:AAEcNq9Jj7I1DsqCvklNy56BysXmqXRLWhA
-      - key: YOOKASSA_SHOP_ID
-        value: 1076798
-      - key: YOOKASSA_SECRET_KEY
-        value: live_ZXy37My0aIF8JBwfW38nqnqm_-0ntVNT-e8Faym5bUw
+# services:
+#   - type: web
+#     name: Bot_tg_go
+#     env: go
+#     plan: free
+#     region: Oregon
+#     buildCommand: go build -o main .
+#     startCommand: ./main
+#     goVersion: 1.24.1  # Указываем нужную версию Go
+#     envVars:
+#       - key: TELEGRAM_TOKEN
+#         value: 7879706842:AAEcNq9Jj7I1DsqCvklNy56BysXmqXRLWhA
+#       - key: YOOKASSA_SHOP_ID
+#         value: 1076798
+#       - key: YOOKASSA_SECRET_KEY
+#         value: live_ZXy37My0aIF8JBwfW38nqnqm_-0ntVNT-e8Faym5bUw
