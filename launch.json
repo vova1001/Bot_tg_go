@@ -7,7 +7,7 @@
         "request": "launch",
         "mode": "auto",
         "program": "CourseTg/cmd/bot/main.go",
-        "envFile": "CourseTg/.env",  // Путь к .env относительно корня проекта
+        "envFile": "CourseTg/.env",  
         "env": {
           "GO_ENV": "development"
         }

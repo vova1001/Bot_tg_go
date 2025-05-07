@@ -89,7 +89,7 @@ func CreatePayment(amount, description, telegramID, courseID, name, email, shopI
 						Value:    amount,
 						Currency: "RUB",
 					},
-					VATCode: 1, // Без НДС
+					VATCode: 1,
 				},
 			},
 		},

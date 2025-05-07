@@ -23,14 +23,12 @@ func main() {
 	bot.Debug = true
 	log.Printf("✅ Авторизован как %s", bot.Self.UserName)
 
-	// Установка вебхука Telegram
 	webhookURL := "https://bot-tg-go.onrender.com"
 	_, err = bot.SetWebhook(tgbotapi.NewWebhook(webhookURL))
 	if err != nil {
 		log.Fatal("Ошибка при установке вебхука:", err)
 	}
 
-	// Основной обработчик Telegram
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodPost {
 			var update tgbotapi.Update
@@ -45,16 +43,13 @@ func main() {
 		}
 	})
 
-	// Обработчик пинга
 	http.HandleFunc("/ping", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("pong"))
 	})
 
-	// Вебхук от ЮKassa
 	http.HandleFunc("/webhook/yookassa", webhook.HandleYooKassaWebhook)
 
-	// Периодический пинг, чтобы сервер не засыпал
 	go func() {
 		for {
 			resp, err := http.Get("https://bot-tg-go.onrender.com/ping")

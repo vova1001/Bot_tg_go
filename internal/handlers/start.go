@@ -149,7 +149,7 @@ func HandleUpdates(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 					amount = "599.00"
 					desc = "Книга рецептов"
 				case "course_3":
-					amount = "799.00"
+					amount = "1.00"
 					desc = "Книга рецептов + Сборник готовых завтраков"
 				default:
 					return
