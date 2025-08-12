@@ -108,12 +108,46 @@ func HandleUpdates(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 				tgbotapi.NewInlineKeyboardRow(
 					tgbotapi.NewInlineKeyboardButtonData("📕 Книга рецептов + Сборник готовых завтраков", "course_3"),
 				),
+				tgbotapi.NewInlineKeyboardRow( // новая кнопка меню
+					tgbotapi.NewInlineKeyboardButtonData("📋 Меню рационов", "show_menu"),
+				),
 			)
-			msg := tgbotapi.NewMessage(chatID, "Выберите сборник для покупки:")
+			msg := tgbotapi.NewMessage(chatID, "Выберите сборник для покупки или меню рационов:")
 			msg.ReplyMarkup = buttons
 			bot.Send(msg)
 
-		case "course_1", "course_2", "course_3":
+		case "show_menu":
+			// 6 рационов
+			buttons := tgbotapi.NewInlineKeyboardMarkup(
+				tgbotapi.NewInlineKeyboardRow(
+					tgbotapi.NewInlineKeyboardButtonData("🥗 Рацион 1 (499₽)", "ration_1"),
+				),
+				tgbotapi.NewInlineKeyboardRow(
+					tgbotapi.NewInlineKeyboardButtonData("🍱 Рацион 2 (599₽)", "ration_2"),
+				),
+				tgbotapi.NewInlineKeyboardRow(
+					tgbotapi.NewInlineKeyboardButtonData("🍛 Рацион 3 (699₽)", "ration_3"),
+				),
+				tgbotapi.NewInlineKeyboardRow(
+					tgbotapi.NewInlineKeyboardButtonData("🥙 Рацион 4 (799₽)", "ration_4"),
+				),
+				tgbotapi.NewInlineKeyboardRow(
+					tgbotapi.NewInlineKeyboardButtonData("🍜 Рацион 5 (899₽)", "ration_5"),
+				),
+				tgbotapi.NewInlineKeyboardRow(
+					tgbotapi.NewInlineKeyboardButtonData("🍲 Рацион 6 (999₽)", "ration_6"),
+				),
+				tgbotapi.NewInlineKeyboardRow(
+					tgbotapi.NewInlineKeyboardButtonData("🔙 Назад", "show_courses"),
+				),
+			)
+			msg := tgbotapi.NewMessage(chatID, "Выберите рацион:")
+			msg.ReplyMarkup = buttons
+			bot.Send(msg)
+
+		case "course_1", "course_2", "course_3",
+			"ration_1", "ration_2", "ration_3", "ration_4", "ration_5", "ration_6":
+
 			var courseDescription string
 			switch data {
 			case "course_2":
@@ -122,6 +156,19 @@ func HandleUpdates(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 				courseDescription = "📘 Книга рецептов\n💰 Цена: 599₽"
 			case "course_3":
 				courseDescription = "📕 Книга рецептов + Сборник готовых завтраков\n💰 Цена: 799₽"
+
+			case "ration_1":
+				courseDescription = "🥗 Рацион 1\n💰 Цена: 1000₽"
+			case "ration_2":
+				courseDescription = "🍱 Рацион 2\n💰 Цена: 1000₽"
+			case "ration_3":
+				courseDescription = "🍛 Рацион 3\n💰 Цена: 1000₽"
+			case "ration_4":
+				courseDescription = "🥙 Рацион 4\n💰 Цена: 1000₽"
+			case "ration_5":
+				courseDescription = "🍜 Рацион 5\n💰 Цена: 1000₽"
+			case "ration_6":
+				courseDescription = "🍲 Рацион 6\n💰 Цена: 1000₽"
 			}
 
 			buttons := tgbotapi.NewInlineKeyboardMarkup(
@@ -129,7 +176,7 @@ func HandleUpdates(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 					tgbotapi.NewInlineKeyboardButtonData("💳 Забрать", "buy_"+data),
 				),
 				tgbotapi.NewInlineKeyboardRow(
-					tgbotapi.NewInlineKeyboardButtonData("🔙 Назад", "show_courses"),
+					tgbotapi.NewInlineKeyboardButtonData("🔙 Назад", "show_menu"),
 				),
 			)
 			msg := tgbotapi.NewMessage(chatID, courseDescription)
@@ -151,6 +198,25 @@ func HandleUpdates(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 				case "course_3":
 					amount = "799.00"
 					desc = "Книга рецептов + Сборник готовых завтраков"
+
+				case "ration_1":
+					amount = "1.00"
+					desc = "Рацион 1"
+				case "ration_2":
+					amount = "1.00"
+					desc = "Рацион 2"
+				case "ration_3":
+					amount = "1.00"
+					desc = "Рацион 3"
+				case "ration_4":
+					amount = "1.00"
+					desc = "Рацион 4"
+				case "ration_5":
+					amount = "1.00"
+					desc = "Рацион 5"
+				case "ration_6":
+					amount = "1.00"
+					desc = "Рацион 6"
 				default:
 					return
 				}

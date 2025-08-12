@@ -18,7 +18,7 @@ type YooKassaNotification struct {
 		Status   string `json:"status"`
 		Metadata struct {
 			TelegramID string `json:"telegram_id"`
-			CourseID   string `json:"course_id"` // теперь получаем и ID курса
+			CourseID   string `json:"course_id"` // теперь получаем и ID курса/рациона
 		} `json:"metadata"`
 	} `json:"object"`
 }
@@ -36,7 +36,7 @@ func HandleYooKassaWebhook(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if notification.Event == "payment.succeeded" && notification.Object.Status == "succeeded" {
-		log.Printf("✅ Оплата прошла для %s (%s)", notification.Object.Metadata.TelegramID, notification.Object.Metadata.CourseID)
+		log.Printf("✅ Оплата прошла для TelegramID=%s, CourseID=%s", notification.Object.Metadata.TelegramID, notification.Object.Metadata.CourseID)
 		go sendPDF(notification.Object.Metadata.TelegramID, notification.Object.Metadata.CourseID)
 	}
 
@@ -67,6 +67,19 @@ func sendPDF(telegramID string, courseID string) {
 		filesToSend = []string{"Sbornik_zavtrakov.pdf"}
 	case "course_3":
 		filesToSend = []string{"Kniga_receptov.pdf", "Sbornik_zavtrakov.pdf"}
+	case "ration_1":
+		filesToSend = []string{"1300kkal.pdf"}
+	case "ration_2":
+		filesToSend = []string{"1400kkal.pdf"}
+	case "ration_3":
+		filesToSend = []string{"1500kkal.pdf"}
+	case "ration_4":
+		filesToSend = []string{"1600kkal.pdf"}
+	case "ration_5":
+		filesToSend = []string{"1700kkal.pdf"}
+	case "ration_6":
+		filesToSend = []string{"1800kkal.pdf"}
+
 	default:
 		log.Printf("❌ Неизвестный courseID: %s", courseID)
 		return
@@ -86,13 +99,12 @@ func sendPDF(telegramID string, courseID string) {
 		}
 
 		msg := tgbotapi.NewDocumentUpload(userID, doc)
-		msg.Caption = "🎉 Спасибо за покупку! \nТеперь у вас есть доступ к множеству вкусных и оригинальных блюд, \nкоторые вы сможете готовить для себя исвоих близких. "
+		msg.Caption = "🎉 Спасибо за покупку!\nТеперь у вас есть доступ к множеству вкусных и оригинальных блюд,\nкоторые вы сможете готовить для себя и своих близких."
 
-		_, err = bot.Send(msg)
-		if err != nil {
+		if _, err = bot.Send(msg); err != nil {
 			log.Printf("❌ Ошибка при отправке PDF %s: %v", file, err)
 		} else {
-			log.Printf("📄 Файл %s отправлен пользователю %d", file, userID)
+			log.Printf("📄 Файл %s успешно отправлен пользователю %d", file, userID)
 		}
 	}
 }
