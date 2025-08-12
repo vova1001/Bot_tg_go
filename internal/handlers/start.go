@@ -120,22 +120,22 @@ func HandleUpdates(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 			// 6 рационов
 			buttons := tgbotapi.NewInlineKeyboardMarkup(
 				tgbotapi.NewInlineKeyboardRow(
-					tgbotapi.NewInlineKeyboardButtonData("🥗 Рацион 1 (499₽)", "ration_1"),
+					tgbotapi.NewInlineKeyboardButtonData("🥗 Рацион на 1300 калорий", "ration_1"),
 				),
 				tgbotapi.NewInlineKeyboardRow(
-					tgbotapi.NewInlineKeyboardButtonData("🍱 Рацион 2 (599₽)", "ration_2"),
+					tgbotapi.NewInlineKeyboardButtonData("🍱 Рацион на 1400 калорий", "ration_2"),
 				),
 				tgbotapi.NewInlineKeyboardRow(
-					tgbotapi.NewInlineKeyboardButtonData("🍛 Рацион 3 (699₽)", "ration_3"),
+					tgbotapi.NewInlineKeyboardButtonData("🍛 Рацион на 1500 калорий", "ration_3"),
 				),
 				tgbotapi.NewInlineKeyboardRow(
-					tgbotapi.NewInlineKeyboardButtonData("🥙 Рацион 4 (799₽)", "ration_4"),
+					tgbotapi.NewInlineKeyboardButtonData("🥙 Рацион на 1600 калорий", "ration_4"),
 				),
 				tgbotapi.NewInlineKeyboardRow(
-					tgbotapi.NewInlineKeyboardButtonData("🍜 Рацион 5 (899₽)", "ration_5"),
+					tgbotapi.NewInlineKeyboardButtonData("🍜 Рацион на 1700 калорий", "ration_5"),
 				),
 				tgbotapi.NewInlineKeyboardRow(
-					tgbotapi.NewInlineKeyboardButtonData("🍲 Рацион 6 (999₽)", "ration_6"),
+					tgbotapi.NewInlineKeyboardButtonData("🍲 Рацион на 1800 калорий", "ration_6"),
 				),
 				tgbotapi.NewInlineKeyboardRow(
 					tgbotapi.NewInlineKeyboardButtonData("🔙 Назад", "show_courses"),
@@ -158,17 +158,17 @@ func HandleUpdates(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 				courseDescription = "📕 Книга рецептов + Сборник готовых завтраков\n💰 Цена: 799₽"
 
 			case "ration_1":
-				courseDescription = "🥗 Рацион 1\n💰 Цена: 1000₽"
+				courseDescription = "🥗 Рацион на 1300 калорий\n💰 Цена: 1000₽"
 			case "ration_2":
-				courseDescription = "🍱 Рацион 2\n💰 Цена: 1000₽"
+				courseDescription = "🍱 Рацион на 1400 калорий\n💰 Цена: 1000₽"
 			case "ration_3":
-				courseDescription = "🍛 Рацион 3\n💰 Цена: 1000₽"
+				courseDescription = "🍛 Рацион на 1500 калорий\n💰 Цена: 1000₽"
 			case "ration_4":
-				courseDescription = "🥙 Рацион 4\n💰 Цена: 1000₽"
+				courseDescription = "🥙 Рацион на 1600 калорий\n💰 Цена: 1000₽"
 			case "ration_5":
-				courseDescription = "🍜 Рацион 5\n💰 Цена: 1000₽"
+				courseDescription = "🍜 Рацион на 1700 калорий\n💰 Цена: 1000₽"
 			case "ration_6":
-				courseDescription = "🍲 Рацион 6\n💰 Цена: 1000₽"
+				courseDescription = "🍲 Рацион на 1800 калорий\n💰 Цена: 1000₽"
 			}
 
 			buttons := tgbotapi.NewInlineKeyboardMarkup(
@@ -201,22 +201,22 @@ func HandleUpdates(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 
 				case "ration_1":
 					amount = "1.00"
-					desc = "Рацион 1"
+					desc = "Рацион на 1300 калорий"
 				case "ration_2":
 					amount = "1.00"
-					desc = "Рацион 2"
+					desc = "Рацион на 1400 калорий"
 				case "ration_3":
 					amount = "1.00"
-					desc = "Рацион 3"
+					desc = "Рацион на 1500 калорий"
 				case "ration_4":
 					amount = "1.00"
-					desc = "Рацион 4"
+					desc = "Рацион на 1600 калорий"
 				case "ration_5":
 					amount = "1.00"
-					desc = "Рацион 5"
+					desc = "Рацион на 1700 калорий"
 				case "ration_6":
 					amount = "1.00"
-					desc = "Рацион 6"
+					desc = "Рацион на 1800 калорий"
 				default:
 					return
 				}
