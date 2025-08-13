@@ -1,0 +1,3 @@
+[submodule "pdfs"]
+	path = pdfs
+	url = git@github.com:vova1001/Tg-bot-pdf.git

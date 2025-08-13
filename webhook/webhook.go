@@ -18,7 +18,7 @@ type YooKassaNotification struct {
 		Status   string `json:"status"`
 		Metadata struct {
 			TelegramID string `json:"telegram_id"`
-			CourseID   string `json:"course_id"` // теперь получаем и ID курса/рациона
+			CourseID   string `json:"course_id"`
 		} `json:"metadata"`
 	} `json:"object"`
 }
@@ -99,7 +99,7 @@ func sendPDF(telegramID string, courseID string) {
 		}
 
 		msg := tgbotapi.NewDocumentUpload(userID, doc)
-		msg.Caption = "🎉 Спасибо за покупку!\nТеперь у вас есть доступ к множеству вкусных и оригинальных блюд,\nкоторые вы сможете готовить для себя и своих близких."
+		msg.Caption = "🎉 Спасибо за покупку!"
 
 		if _, err = bot.Send(msg); err != nil {
 			log.Printf("❌ Ошибка при отправке PDF %s: %v", file, err)
