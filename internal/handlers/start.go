@@ -4,6 +4,7 @@ import (
 	"CourseTg/config"
 	"CourseTg/internal/payment"
 	"fmt"
+	"log"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
@@ -98,6 +99,7 @@ func HandleUpdates(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 	if update.CallbackQuery != nil {
 		chatID := update.CallbackQuery.Message.Chat.ID
 		data := update.CallbackQuery.Data
+		log.Printf("🔘 CallbackQuery от %d: %s", chatID, data)
 
 		// ✅ обязательное подтверждение callback'а
 		callback := tgbotapi.NewCallback(update.CallbackQuery.ID, "")
@@ -121,7 +123,12 @@ func HandleUpdates(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 			)
 			msg := tgbotapi.NewMessage(chatID, "Выберите сборник для покупки или меню рационов:")
 			msg.ReplyMarkup = buttons
-			bot.Send(msg)
+			sentMsg, err := bot.Send(msg)
+			if err != nil {
+				log.Printf("❌ Ошибка отправки сообщения для callback %s: %v", data, err)
+			} else {
+				log.Printf("✅ Отправлено сообщение для callback %s, messageID=%d", data, sentMsg.MessageID)
+			}
 
 		case "show_menu":
 			buttons := tgbotapi.NewInlineKeyboardMarkup(
