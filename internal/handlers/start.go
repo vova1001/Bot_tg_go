@@ -38,6 +38,7 @@ func HandleUpdates(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 				msg := tgbotapi.NewMessage(chatID, "✉️ Введите ваш email для получения чека:")
 				bot.Send(msg)
 				return
+
 			case "wait_email":
 				state.Email = update.Message.Text
 				state.Step = "done"
@@ -97,6 +98,10 @@ func HandleUpdates(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 	if update.CallbackQuery != nil {
 		chatID := update.CallbackQuery.Message.Chat.ID
 		data := update.CallbackQuery.Data
+
+		// ✅ обязательное подтверждение callback'а
+		callback := tgbotapi.NewCallback(update.CallbackQuery.ID, "")
+		bot.AnswerCallbackQuery(callback)
 
 		switch data {
 		case "show_courses":
