@@ -67,18 +67,6 @@ func sendPDF(telegramID string, courseID string) {
 		filesToSend = []string{"Sbornik_zavtrakov.pdf"}
 	case "course_3":
 		filesToSend = []string{"Kniga_receptov.pdf", "Sbornik_zavtrakov.pdf"}
-	case "ration_1":
-		filesToSend = []string{"1300kkal.pdf"}
-	case "ration_2":
-		filesToSend = []string{"1400kkal.pdf"}
-	case "ration_3":
-		filesToSend = []string{"1500kkal.pdf"}
-	case "ration_4":
-		filesToSend = []string{"1600kkal.pdf"}
-	case "ration_5":
-		filesToSend = []string{"1700kkal.pdf"}
-	case "ration_6":
-		filesToSend = []string{"1800kkal.pdf"}
 
 	default:
 		log.Printf("❌ Неизвестный courseID: %s", courseID)

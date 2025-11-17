@@ -75,9 +75,7 @@ func HandleUpdates(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 				"Люблю силовые тренировки 💪🏼 и сбалансированное питание 🍽️\n\n"+
 				"Общий стаж занятий — 8 лет. Сертифицирована по направлению «Фитнес-занятия во время беременности и восстановления после родов».\n\n"+
 				"Благодаря правильному и сбалансированному питанию добилась своей лучшей формы, что позволяет мне держать тело в тонусе.\n\n"+
-				"В этом боте вы можете приобрести мои сборники рецептов простых и вкусных блюд, благодаря которым я получила подтянутую фигуру.\n\n"+
-				"📋 Готовые недельные рационы питания! Это полноценные меню на 7 дней с уже подсчитанными калориями, белками, жирами и углеводами (КБЖУ).\n"+
-				"Экономьте время на планировании и расчетах - берите готовое решение для идеально сбалансированного питания!")
+				"В этом боте вы можете приобрести мои сборники рецептов простых и вкусных блюд, благодаря которым я получила подтянутую фигуру.\n")
 			button := tgbotapi.NewInlineKeyboardMarkup(
 				tgbotapi.NewInlineKeyboardRow(
 					tgbotapi.NewInlineKeyboardButtonData("📚 Показать продукты", "show_courses"),
@@ -117,11 +115,8 @@ func HandleUpdates(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 				tgbotapi.NewInlineKeyboardRow(
 					tgbotapi.NewInlineKeyboardButtonData("📕 Книга рецептов + Сборник готовых завтраков", "course_3"),
 				),
-				tgbotapi.NewInlineKeyboardRow(
-					tgbotapi.NewInlineKeyboardButtonData("📋 Меню рационов", "show_menu"),
-				),
 			)
-			msg := tgbotapi.NewMessage(chatID, "Выберите сборник для покупки или меню рационов:")
+			msg := tgbotapi.NewMessage(chatID, "Выберите сборник для покупки")
 			msg.ReplyMarkup = buttons
 			sentMsg, err := bot.Send(msg)
 			if err != nil {
@@ -130,36 +125,7 @@ func HandleUpdates(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 				log.Printf("✅ Отправлено сообщение для callback %s, messageID=%d", data, sentMsg.MessageID)
 			}
 
-		case "show_menu":
-			buttons := tgbotapi.NewInlineKeyboardMarkup(
-				tgbotapi.NewInlineKeyboardRow(
-					tgbotapi.NewInlineKeyboardButtonData("🥗 Рацион на 1300 калорий", "ration_1"),
-				),
-				tgbotapi.NewInlineKeyboardRow(
-					tgbotapi.NewInlineKeyboardButtonData("🍱 Рацион на 1400 калорий", "ration_2"),
-				),
-				tgbotapi.NewInlineKeyboardRow(
-					tgbotapi.NewInlineKeyboardButtonData("🍛 Рацион на 1500 калорий", "ration_3"),
-				),
-				tgbotapi.NewInlineKeyboardRow(
-					tgbotapi.NewInlineKeyboardButtonData("🥙 Рацион на 1600 калорий", "ration_4"),
-				),
-				tgbotapi.NewInlineKeyboardRow(
-					tgbotapi.NewInlineKeyboardButtonData("🍜 Рацион на 1700 калорий", "ration_5"),
-				),
-				tgbotapi.NewInlineKeyboardRow(
-					tgbotapi.NewInlineKeyboardButtonData("🍲 Рацион на 1800 калорий", "ration_6"),
-				),
-				tgbotapi.NewInlineKeyboardRow(
-					tgbotapi.NewInlineKeyboardButtonData("🔙 Назад", "show_courses"),
-				),
-			)
-			msg := tgbotapi.NewMessage(chatID, "Выберите рацион:")
-			msg.ReplyMarkup = buttons
-			bot.Send(msg)
-
-		case "course_1", "course_2", "course_3",
-			"ration_1", "ration_2", "ration_3", "ration_4", "ration_5", "ration_6":
+		case "course_1", "course_2", "course_3":
 
 			var courseDescription string
 			switch data {
@@ -169,19 +135,6 @@ func HandleUpdates(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 				courseDescription = "📘 Книга рецептов\n💰 Цена: 599₽"
 			case "course_3":
 				courseDescription = "📕 Книга рецептов + Сборник готовых завтраков\n💰 Цена: 799₽"
-
-			case "ration_1":
-				courseDescription = "🥗 Рацион на 1300 калорий\n💰 Цена: 1000₽"
-			case "ration_2":
-				courseDescription = "🍱 Рацион на 1400 калорий\n💰 Цена: 1000₽"
-			case "ration_3":
-				courseDescription = "🍛 Рацион на 1500 калорий\n💰 Цена: 1000₽"
-			case "ration_4":
-				courseDescription = "🥙 Рацион на 1600 калорий\n💰 Цена: 1000₽"
-			case "ration_5":
-				courseDescription = "🍜 Рацион на 1700 калорий\n💰 Цена: 1000₽"
-			case "ration_6":
-				courseDescription = "🍲 Рацион на 1800 калорий\n💰 Цена: 1000₽"
 			}
 
 			buttons := tgbotapi.NewInlineKeyboardMarkup(
@@ -212,24 +165,6 @@ func HandleUpdates(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 					amount = "799.00"
 					desc = "Книга рецептов + Сборник готовых завтраков"
 
-				case "ration_1":
-					amount = "1000.00"
-					desc = "Рацион на 1300 калорий"
-				case "ration_2":
-					amount = "1000.00"
-					desc = "Рацион на 1400 калорий"
-				case "ration_3":
-					amount = "1000.00"
-					desc = "Рацион на 1500 калорий"
-				case "ration_4":
-					amount = "1000.00"
-					desc = "Рацион на 1600 калорий"
-				case "ration_5":
-					amount = "1000.00"
-					desc = "Рацион на 1700 калорий"
-				case "ration_6":
-					amount = "1000.00"
-					desc = "Рацион на 1800 калорий"
 				default:
 					return
 				}
